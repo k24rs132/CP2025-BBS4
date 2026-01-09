@@ -496,10 +496,25 @@ $(function() {
 
     // 認証状態の監視
     firebase.auth().onAuthStateChanged((user) => {
-        currentUser = user;
-        updateUI(user);
-        loadPosts();
-     });
+    currentUser = user;
+
+    // ★ 表示名が無い場合は入力させる
+    if (user && !user.displayName) {
+        const name = prompt('表示名を入力してください');
+        if (name && name.trim()) {
+            user.updateProfile({
+                displayName: name.trim()
+            }).then(() => {
+                updateUI(user);
+            });
+            return;
+        }
+    }
+
+    updateUI(user);
+    loadPosts();
+});
+
 
     // 文字数カウンターの初期化
     updateCharacterCount('contentInput', 'contentCount', 1000);
@@ -507,7 +522,7 @@ $(function() {
     // 投稿処理
     $('#postButton').on('click', () => {
         // 投稿内容をフォームから取得
-        const authorVal = $('#authorInput').val();
+        
         const contentVal = $('#contentInput').val();
         createPost(authorVal, contentVal);
     });
