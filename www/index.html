@@ -393,10 +393,25 @@ function login(email, password) {
     button.prop('disabled', true);
 
     firebase.auth().signInWithEmailAndPassword(email, password)
-    .then(() => {
-        showMessage('ログインしました');
-        clearAuthForm();
-    })
+.then((result) => {
+    const user = result.user;
+
+    // ★ ログイン時に表示名がなければ入力させる
+    if (!user.displayName) {
+        const name = prompt('表示名を入力してください');
+
+        if (name && name.trim()) {
+            return user.updateProfile({
+                displayName: name.trim()
+            });
+        }
+    }
+})
+.then(() => {
+    showMessage('ログインしました');
+    clearAuthForm();
+})
+
     .catch((error) => {
         showMessage(getAuthErrorMessage(error), 'error');
     })
@@ -413,6 +428,17 @@ function register(email, password) {
     button.prop('disabled', true);
 
     firebase.auth().createUserWithEmailAndPassword(email, password)
+    .then((result) => {
+        const user = result.user;
+
+        // ★ ここを追加（表示名入力）
+        const name = prompt('表示名を入力してください');
+        if (name && name.trim()) {
+            return user.updateProfile({
+                displayName: name.trim()
+            });
+        }
+    })
     .then(() => {
         showMessage('アカウントを作成しました');
         clearAuthForm();
@@ -424,6 +450,7 @@ function register(email, password) {
         button.prop('disabled', false);
     });
 }
+
 
 // ログアウト処理
 function logout() {
@@ -616,5 +643,6 @@ window.addEventListener('unload', () => {
             </div>
         </div>
     </div>
+    
 </body>
 </html>
