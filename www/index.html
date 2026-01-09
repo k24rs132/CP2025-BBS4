@@ -521,11 +521,9 @@ $(function() {
 
     // 投稿処理
     $('#postButton').on('click', () => {
-        // 投稿内容をフォームから取得
-        
-        const contentVal = $('#contentInput').val();
-        createPost(authorVal, contentVal);
-    });
+    createPost(null, $('#contentInput').val());
+});
+
 
     $('#loginButton').on('click', () => {
         const email = $('#loginEmail').val();
